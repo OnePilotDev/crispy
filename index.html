@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gig Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --white: #ffffff; --bg: #f5f5f5;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --card-hover-shadow: 0 8px 28px rgba(0,0,0,0.15);
+    --primary: #1dbf73; --primary-dark: #19a463;
+    --text-dark: #222; --text-mid: #555; --text-light: #888;
+    --star: #ffbe00; --border: #e8e8e8;
+    --tag-bg: #f0faf5; --tag-text: #1dbf73;
+    --badge-top: #ff6b35; --badge-choice: #8b5cf6;
+    --radius: 12px; --radius-sm: 8px;
+    --wa: #25d366; --wa-dark: #1ebe5e;
+    --overlay: rgba(0,0,0,0.55);
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-dark); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 14px 40px; display: flex; align-items: center;
+    justify-content: space-between; position: sticky; top: 0; z-index: 200;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); letter-spacing: -1px; }
+  .logo span { color: var(--text-dark); }
+  .calc-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: #fff7ed; color: #c2410c;
+    border: 1.5px solid #fed7aa; border-radius: 8px;
+    padding: 7px 14px; font-size: .82rem; font-weight: 700;
+    cursor: pointer; transition: background .2s;
+    font-family: 'Inter', sans-serif;
+  }
+  .calc-btn:hover { background: #ffedd5; }
+
+  /* STICKY SEARCH */
+  .search-wrap {
+    background: var(--white); padding: 14px 40px 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 57px; z-index: 190;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .search-container { position: relative; max-width: 720px; margin: 0 auto; }
+  .search-box {
+    display: flex; border: 2px solid var(--primary);
+    border-radius: 10px; overflow: hidden;
+    box-shadow: 0 2px 12px rgba(29,191,115,0.15);
+  }
+  .search-box input {
+    flex: 1; border: none; outline: none;
+    padding: 11px 16px; font-size: .93rem;
+    font-family: 'Inter', sans-serif; color: var(--text-dark); background: #fff;
+  }
+  .search-box input::placeholder { color: #bbb; }
+  .search-box button {
+    background: var(--primary); color: #fff; border: none;
+    padding: 0 20px; font-size: .88rem; font-weight: 700;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    transition: background .2s; display: flex; align-items: center; gap: 7px;
+  }
+  .search-box button:hover { background: var(--primary-dark); }
+  .suggestions {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 300; overflow: hidden; display: none;
+  }
+  .suggestions.show { display: block; }
+  .suggestion-item {
+    padding: 10px 16px; font-size: .87rem; cursor: pointer;
+    display: flex; align-items: center; gap: 10px; color: var(--text-dark);
+    transition: background .15s;
+  }
+  .suggestion-item:hover, .suggestion-item.active { background: #f0faf5; color: var(--primary); }
+
+  /* PAGE */
+  .page { max-width: 1200px; margin: 0 auto; padding: 24px 24px 60px; }
+  .result-info { font-size: .87rem; color: var(--text-light); margin-bottom: 18px; }
+  .result-info strong { color: var(--text-dark); }
+  .no-results { text-align: center; padding: 60px 20px; display: none; }
+  .no-results.show { display: block; }
+  .no-results h3 { font-size: 1.2rem; margin-bottom: 8px; }
+  .no-results p { color: var(--text-light); font-size: .9rem; }
+
+  /* GRID */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+
+  /* CARD */
+  .card {
+    background: var(--white); border-radius: var(--radius);
+    overflow: hidden; border: 1px solid var(--border);
+    box-shadow: var(--card-shadow); cursor: pointer;
+    transition: box-shadow .25s, transform .25s; position: relative;
+  }
+  .card:hover { box-shadow: var(--card-hover-shadow); transform: translateY(-4px); }
+  .card-thumb { width: 100%; height: auto; max-height: 200px; object-fit: contain; display: block; background: #f0f0f0; }
+
+  /* CARD TAGS */
+  .card-tags {
+    display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;
+  }
+  .card-tag {
+    font-size: .65rem; font-weight: 700; padding: 3px 8px;
+    border-radius: 20px; background: var(--tag-bg); color: var(--tag-text);
+    border: 1px solid #c3e8d5; white-space: nowrap;
+  }
+
+  /* TOP badge */
+  .top-badge {
+    position: absolute; top: 10px; left: 10px;
+    font-size: .67rem; font-weight: 700;
+    padding: 3px 9px; border-radius: 20px; text-transform: uppercase; color: #fff;
+  }
+  .badge-top { background: var(--badge-top); }
+  .badge-choice { background: var(--badge-choice); }
+
+  .card-body { padding: 13px 15px 15px; }
+  .seller-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+  .avatar {
+    width: 27px; height: 27px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: .68rem; font-weight: 700; flex-shrink: 0;
+  }
+  .seller-name { font-size: .81rem; font-weight: 600; color: var(--text-dark); }
+  .seller-label {
+    font-size: .66rem; font-weight: 700; color: var(--primary);
+    border: 1px solid var(--primary); border-radius: 4px;
+    padding: 1px 5px; margin-left: auto; white-space: nowrap;
+  }
+  .card-title {
+    font-size: .86rem; font-weight: 500; color: var(--text-mid);
+    line-height: 1.45; margin-bottom: 10px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border); padding-top: 10px;
+  }
+  .rating { display: flex; align-items: center; gap: 4px; font-size: .78rem; }
+  .stars { color: var(--star); }
+  .rating-count { color: var(--text-light); font-size: .74rem; }
+  .price { font-size: .92rem; font-weight: 700; color: var(--text-dark); }
+  .price span { font-size: .7rem; font-weight: 500; color: var(--text-light); }
+
+  /* POPUP */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: var(--overlay); z-index: 1000;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .overlay.active { display: flex; animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes slideUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+  .popup {
+    background: var(--white); border-radius: 16px; max-width: 560px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: slideUp .25s ease; position: relative;
+  }
+  .popup-close {
+    position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.9);
+    border: none; cursor: pointer; font-size: 1.3rem; color: var(--text-light);
+    z-index: 2; line-height: 1; border-radius: 50%; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center; transition: color .15s;
+  }
+  .popup-close:hover { color: var(--text-dark); }
+  .popup-img { width: 100%; height: 210px; object-fit: cover; border-radius: 16px 16px 0 0; display: block; }
+  .popup-cat-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .popup-cat-chip {
+    font-size: .72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+    color: #fff; text-transform: uppercase; letter-spacing: .4px;
+  }
+  .popup-body { padding: 20px 22px 26px; }
+  .popup-seller-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .popup-avatar {
+    width: 38px; height: 38px; border-radius: 50%; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: .88rem; flex-shrink: 0;
+  }
+  .popup-seller-name { font-size: .92rem; font-weight: 700; }
+  .popup-seller-sub { font-size: .75rem; color: var(--text-light); }
+  .popup-title { font-size: 1.05rem; font-weight: 700; line-height: 1.45; margin-bottom: 10px; }
+  .popup-rating { display: flex; align-items: center; gap: 6px; margin-bottom: 13px; }
+  .popup-rating .stars { font-size: .95rem; }
+  .popup-rating .num { font-weight: 700; }
+  .popup-rating .cnt { color: var(--text-light); font-size: .8rem; }
+  .popup-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .tag {
+    background: var(--tag-bg); color: var(--tag-text); font-size: .73rem; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px; border: 1px solid #c3e8d5;
+  }
+  .popup-desc { font-size: .87rem; color: var(--text-mid); line-height: 1.65; margin-bottom: 16px; }
+  .popup-meta {
+    display: flex; gap: 16px; margin-bottom: 18px;
+    padding: 12px 14px; background: var(--bg); border-radius: var(--radius-sm);
+  }
+  .meta-item { text-align: center; flex: 1; }
+  .meta-val { font-size: .95rem; font-weight: 700; }
+  .meta-label { font-size: .7rem; color: var(--text-light); margin-top: 2px; }
+  .popup-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .popup-price-label { font-size: .72rem; color: var(--text-light); }
+  .popup-price-val { font-size: 1.3rem; font-weight: 800; }
+
+  .btn-wa {
+    display: flex; align-items: center; gap: 8px; background: var(--wa); color: #fff;
+    padding: 11px 18px; border-radius: var(--radius-sm); font-size: .88rem; font-weight: 700;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: background .2s, transform .15s; flex: 1; justify-content: center;
+  }
+  .btn-wa:hover { background: var(--wa-dark); transform: scale(1.02); }
+  .btn-wa svg { width: 19px; height: 19px; fill: #fff; flex-shrink: 0; }
+  .popup::-webkit-scrollbar { width: 5px; }
+  .popup::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+  /* CALCULATOR MODAL */
+  .calc-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 2000;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .calc-overlay.active { display: flex; animation: fadeIn .2s ease; }
+  .calc-modal {
+    background: var(--white); border-radius: 18px;
+    max-width: 400px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: slideUp .25s ease; overflow: hidden;
+  }
+  .calc-header {
+    background: linear-gradient(135deg, #1dbf73, #0d9a5c);
+    padding: 20px 22px; color: #fff; position: relative;
+  }
+  .calc-header h3 { font-size: 1.1rem; font-weight: 700; }
+  .calc-header p { font-size: .8rem; opacity: .8; margin-top: 3px; }
+  .calc-close {
+    position: absolute; top: 14px; right: 16px;
+    background: rgba(255,255,255,0.2); border: none; color: #fff;
+    font-size: 1.1rem; cursor: pointer; border-radius: 50%;
+    width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  }
+  .calc-body { padding: 22px; }
+  .calc-rate-info {
+    background: #f0faf5; border: 1px solid #c3e8d5; border-radius: 8px;
+    padding: 8px 14px; font-size: .78rem; color: #166534; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .calc-section { margin-bottom: 20px; }
+  .calc-section label { font-size: .82rem; font-weight: 600; color: var(--text-dark); display: block; margin-bottom: 6px; }
+  .calc-input-row { display: flex; gap: 8px; }
+  .calc-input-row input {
+    flex: 1; border: 1.5px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; font-size: .95rem; font-family: 'Inter', sans-serif;
+    outline: none; transition: border-color .2s;
+  }
+  .calc-input-row input:focus { border-color: var(--primary); }
+  .calc-input-row .unit-label {
+    background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; font-size: .82rem; font-weight: 700; color: var(--text-mid);
+    display: flex; align-items: center;
+  }
+  .calc-result {
+    background: #f0faf5; border-radius: 8px;
+    padding: 12px 14px; margin-top: 8px;
+    font-size: 1.1rem; font-weight: 700; color: #0d7a4a;
+    min-height: 44px; display: flex; align-items: center;
+  }
+  .calc-divider { border: none; border-top: 1px solid var(--border); margin: 4px 0 16px; }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 16px; }
+    .search-wrap { padding: 12px 16px 14px; top: 53px; }
+    .page { padding: 16px 14px 50px; }
+    .popup-body { padding: 14px 15px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">OnePilot<span>Tools.com</span></div>
+  <button class="calc-btn" onclick="openCalc()">
+    💱 PKR / USD Calculator
+  </button>
+</header>
+
+<!-- STICKY SEARCH -->
+<div class="search-wrap">
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search: SEO, Graphic Designer, Google Ads, GMB..." autocomplete="off" />
+      <button onclick="doSearch()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </button>
+    </div>
+    <div class="suggestions" id="suggestions"></div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="result-info" id="resultInfo"></div>
+  <div class="grid" id="gigGrid"></div>
+  <div class="no-results" id="noResults">
+    <h3>No services found 😕</h3>
+    <p>Try searching with different keywords like "SEO", "Designer", "Google Ads"</p>
+  </div>
+</div>
+
+<!-- GIG POPUP -->
+<div class="overlay" id="overlay" onclick="closePopupOutside(event)">
+  <div class="popup" id="popup">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <img class="popup-img" id="popupImg" src="" alt="">
+    <div class="popup-body">
+      <div class="popup-seller-row">
+        <div class="popup-avatar" id="popupAvatar"></div>
+        <div>
+          <div class="popup-seller-name" id="popupSellerName"></div>
+          <div class="popup-seller-sub" id="popupSellerSub"></div>
+        </div>
+      </div>
+      <div class="popup-cat-row" id="popupCatRow"></div>
+      <div class="popup-title" id="popupTitle"></div>
+      <div class="popup-rating" id="popupRating"></div>
+      <div class="popup-tags" id="popupTags"></div>
+      <div class="popup-desc" id="popupDesc"></div>
+      <div class="popup-meta" id="popupMeta"></div>
+      <div class="popup-footer">
+        <div>
+          <div class="popup-price-label">Starting at</div>
+          <div class="popup-price-val" id="popupPrice"></div>
+        </div>
+        <a class="btn-wa" id="popupWA" href="#" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp Per Rabta Karain
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CALCULATOR MODAL -->
+<div class="calc-overlay" id="calcOverlay" onclick="closeCalcOutside(event)">
+  <div class="calc-modal">
+    <div class="calc-header">
+      <button class="calc-close" onclick="closeCalc()">✕</button>
+      <h3>💱 Currency Calculator</h3>
+      <p>Dollar aur Rupay mein convert karein</p>
+    </div>
+    <div class="calc-body">
+      <div class="calc-rate-info">
+        <span>📌</span>
+        <span>Rate: <strong>1 USD = <span id="rateDisplay">278.50</span> PKR</strong> (approximate)</span>
+      </div>
+
+      <div class="calc-section">
+        <label>🇺🇸 USD → PKR</label>
+        <div class="calc-input-row">
+          <input type="number" id="usdInput" placeholder="Enter USD amount" min="0" oninput="calcUsdToPkr()">
+          <span class="unit-label">USD</span>
+        </div>
+        <div class="calc-result" id="usdResult">—</div>
+      </div>
+
+      <hr class="calc-divider">
+
+      <div class="calc-section">
+        <label>🇵🇰 PKR → USD</label>
+        <div class="calc-input-row">
+          <input type="number" id="pkrInput" placeholder="Enter PKR amount" min="0" oninput="calcPkrToUsd()">
+          <span class="unit-label">PKR</span>
+        </div>
+        <div class="calc-result" id="pkrResult">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const WHATSAPP_NUMBER = "923005682345";
+const USD_TO_PKR = 278.50; // approximate rate
+
+// ── GIG DATA ──────────────────────────────────────────────
+// categories: seo | design | ads | gmb | adsense
+// catLabel: display name
+// searchKeys: extra keywords for search
+const gigs = [
+  {
+    id: 1,
+    img: "https://i.pinimg.com/736x/e0/cd/d7/e0cdd7d0e43669b187d064c5ddd00250.jpg",
+    title: "I will create professional CV for your job selection.",
+    seller: "Abdul Hameed", sellerInit: "AM", sellerColor: "#1dbf73",
+    label: "Top Rated", badge: null,
+    category: "seo", catLabel: "CV Specialist",
+    rating: 10.7, reviews: 105, pricePkr: 50, delivery: "30 mintues", revisions: "105",
+    waNumber: "923005682345",
+    tags: ["CV", "Resume", "Job Application"],
+    searchKeys: "cv resume job application professional",
+    desc: "I am an expert at making professional resumes and CVs. I take your details and turn them into a neat story. This helps company owners choose you for the job. Trust me to make you look like a star!",
+  },
+  {
+    id: 2,
+    img: "https://i.pinimg.com/736x/66/4e/75/664e756ab48d2f24fa1b43925ef6fe67.jpg",
+    title: "The best combo offer for students and job seekers!",
+    seller: "Abdul Hameed", sellerInit: "MI", sellerColor: "#2196f3",
+    
+    category: "ads", catLabel: "Combo Offer",
+    rating: 8.0, reviews: 115, pricePkr: 250, delivery: "1 day", revisions: "221",
+    waNumber: "923005682345",
+    tags: ["Combo Offer"],
+    searchKeys: "",
+    desc: "The best combo offer for students and job seekers! Get a professional CV, matching cover letter, and 6 passport photos for a total of just Rs. 250. We print and ship everything safely to your doorstep with Free Delivery. Hurry up and order this amazing discount package right now!",
+  },
+  {
+    id: 3,
+    img: "https://template.canva.com/EAFQHkE0bec/2/0/800w-yagGQU00WtY.jpg",
+    title: "Looking for a professional business card? I will design a clean, unique, and modern visiting card that represents your brand perfectly.",
+    seller: "Mirza Ibrar", sellerInit: "MI", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Visiting Card",
+    rating: 5.0, reviews: 38, pricePkr: 100, delivery: "1 day", revisions: "38",
+    waNumber: "923035248445",
+    tags: ["Visiting Card"],
+    searchKeys: "graphic designer google ads local business campaign ppc",
+    desc: "Your business card is the first impression of your brand—let's make it count! I am here to provide you with unique and elegant visiting card designs that speak for your business. From luxury styles to modern corporate looks, I deliver top-quality work ready for printing. Order now and get a design that truly represents you!",
+  },
+  {
+   id: 4,
+    img: "https://i.pinimg.com/736x/61/63/d6/6163d61c7ad96f17dc96f7cb51994e9d.jpg",
+    title: "Looking for a modern letterhead that makes your business stand out from the crowd?",
+    seller: "Mirza Ibrar", sellerInit: "MI", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Letterhead",
+    rating: 5.0, reviews: 95, pricePkr: 100, delivery: "1 day", revisions: "95",
+    waNumber: "923035248445",
+    tags: ["Letterhead"],
+    searchKeys: "graphic designer google ads local business campaign ppc",
+    desc: "Looking for a modern letterhead that makes your business stand out from the crowd? I am here to design an eye-catching and sophisticated letterhead layout that leaves a lasting impression on clients. From minimal corporate styles to creative layouts, I deliver top-tier quality with unlimited revisions until you are 100% satisfied. Let's start creating your design!",
+  },
+  { 
+   id: 5,
+    img: "https://i.pinimg.com/1200x/87/cf/1f/87cf1f87078a6b2a0994b72e04bc2213.jpg",
+    title: "Need a professional and clean prescription pad for your medical practice?",
+    seller: "Mirza Ibrar", sellerInit: "MI", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Letterhead",
+    rating: 7.0, reviews: 128, pricePkr: 100, delivery: "1 day", revisions: "140",
+    waNumber: "923035248445",
+    tags: ["Doctor Pad"],
+    searchKeys: "graphic designer google ads local business campaign ppc",
+    desc: "Need a professional and clean prescription pad for your medical practice? I will design a modern, highly organized, and trustworthy doctor pad tailored to your clinic or hospital. You will get clear layouts with dedicated spaces for patient details, logos, and medical text. Receive print-ready and high-quality files that reflect your professionalism!",
+  },
+  {  
+  id: 6,
+    img: "https://i.pinimg.com/736x/24/f9/90/24f990e5f1ca3ed2623739c4cff19419.jpg",
+    title: "Every official letter needs a great look, and I can help you create it!",
+    seller: "Mirza Ibrar", sellerInit: "MA", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "business corporate letterhead",
+    rating: 5.2, reviews: 42, pricePkr: 100, delivery: "1 day", revisions: "66",
+    waNumber: "923035248445",
+    tags: ["Business Corporate Letterhead"],
+    searchKeys: "graphic designer google ads local business campaign ppc",
+    desc: "Every official letter needs a great look, and I can help you create it! I will design a nice and professional letterhead using your company colors and logo. I offer fast delivery and changes until you are 100% happy with the work. Let's start making your perfect letterhead today!",
+  },
+  {    
+    id: 7,
+    img: "https://i.pinimg.com/1200x/b9/c6/34/b9c634e827b8b3448f1bdc2c3ebcf3d6.jpg",
+    title: "Do you need a beautiful certificate for your school, company, or event?",
+    seller: "Mirza Ibrar", sellerInit: "MI", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Certificate",
+    rating: 6.3, reviews: 70, pricePkr: 100, delivery: "1 day", revisions: "121",
+    waNumber: "923035248445",
+    tags: ["Certificate"],
+    searchKeys: "graphic designer google ads local business campaign ppc",
+    desc: "Do you need a beautiful certificate for your school, company, or event? I will design a very clean and professional certificate for you. It will look neat, official, and perfect for printing. You will get high-quality files that you can hand out to people with pride!",
+  },
+  {   
+   d: 8,
+    img: "https://i.pinimg.com/1200x/6e/94/93/6e9493c10f97303b734029a3d7751fd2.jpg",
+    title: "Want to make your business look professional?",
+    seller: "Mirza Ibrar", sellerInit: "MI", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Bill Book, Invoice, Cash Memoos",
+    rating: 5.4, reviews: 22, pricePkr: 100, delivery: "1 day", revisions: "121",
+    waNumber: "923035248445",
+    tags: ["Bill Book","Invoice", "Cash Memoos"],
+    searchKeys: "graphic designer google ads local business campaign ppc",
+    desc: "Give your customers a beautiful and neat receipt when they buy from you! I design modern bill books, cash memos, and invoices tailored for any business. It will show your logo, phone number, and address perfectly. Order today and get super-fast delivery!",
+  },
+  {    
+  id: 9,
+    img: "https://i.pinimg.com/736x/b9/03/9f/b9039fe3fe77c315f5bc036ffa9d317e.jpg",
+    title: "Grow your business today with an amazing custom flyer design!",
+    seller: "Mirza Ibrar", sellerInit: "MI", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Flyer",
+    rating: 5.2, reviews: 25, pricePkr: 100, delivery: "1 day", revisions: "32",
+    waNumber: "923035248445",
+    tags: ["Flyers", "Leaflet"],
+    searchKeys: "graphic designer google ads local business campaign ppc",
+    desc: "Grow your business today with an amazing custom flyer design! I make simple, neat, and colorful flyers for shops, parties, food, or any business. It will include your logo, details, and special offers perfectly. Order now and get super-fast delivery!",
+  },
+  {   
+    id: 10,
+    img: "https://i.pinimg.com/736x/d8/43/33/d84333441543b553a017309ace9f8734.jpg",
+    title: "Grow your business today with an amazing custom flyer design!",
+    seller: "Mirza Ibrar", sellerInit: "MI", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Social Media Design",
+    rating: 6.9, reviews: 57, pricePkr: 100, delivery: "1 day", revisions: "73",
+    waNumber: "923035248445",
+    tags: ["Social Media Design"],
+    searchKeys: "Make your brand look amazing online with custom digital marketing graphics!",
+    desc: "Make your brand look amazing online with custom digital marketing graphics! I create simple, neat, and exciting banners for Facebook, Instagram, or any platform. It will show your products, logos, and offers perfectly to help you get more sales. Order now for super-fast delivery!",
+  },
+  {  
+     id: 11,
+    img: "https://i.ytimg.com/vi/12bbBvOgYw8/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLATCfOQkdw5YbkMPT64G29ajZSsMw",
+    title: "Do you want to impress everyone with your next presentation?",
+    seller: "Abdul Hameed", sellerInit: "AH", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Slides Expert",
+    rating: 7.6, reviews: 109, pricePkr: 20, delivery: "1 day", revisions: "157",
+    waNumber: "923005682345",
+    tags: ["Slides Masetr","PPT Expert"],
+    searchKeys: "Make your brand look amazing online with custom digital marketing graphics!",
+    desc: "Do you want to impress everyone with your next presentation? I will design a beautiful, clean, and professional slide deck for your school or business. It will have nice colors, easy-to-read text, and clear layouts that look amazing. You will get high-quality files that are 100% ready to show!",
+  },
+  {  
+  id: 12,
+    img: "https://i.pinimg.com/736x/e7/bb/e6/e7bbe6a6a407809361dc2af1ad9ce35f.jpg",
+    title: "Turn your messy data into a beautiful and organized Excel spreadsheet!",
+    seller: "Abdul Hameed", sellerInit: "AH", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Excel Expert",
+    rating: 5.3, reviews: 62, pricePkr: 50, delivery: "1 day", revisions: "157",
+    waNumber: "923005682345",
+    tags: ["Excel Expert"],
+    searchKeys: "Make your brand look amazing online with custom digital marketing graphics!",
+    desc: "Turn your messy data into a beautiful and organized Excel spreadsheet! I will clean your lists, fix your tables, and add simple formulas to do all the hard math for you. It is perfect for tracking your daily sales, store items, or monthly budget easily. Order today and get a super clean sheet ready in no time!",
+  },
+  {    
+    id: 13,
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSzxraIfVfzmqOl24jDVDDxxK5WPR3Swil9w&s",
+    title: "Make your assignments and thesis look perfect with executive formatting!",
+    seller: "Abdul Hameed", sellerInit: "AH", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Thesis Expert",
+    rating: 9.1, reviews: 73, pricePkr: 15, delivery: "1 day", revisions: "124",
+    waNumber: "923005682345",
+    tags: ["Thesis Expert", "Assignment Expert"],
+    searchKeys: "Make your brand look amazing online with custom digital marketing graphics!",
+    desc: "Make your assignments and thesis look perfect with executive formatting! I specialize in organizing long documents, fixing fonts, and creating clean headings and tables. Everything will be structured beautifully so you can get the best results with absolute confidence. Order today for super-fast and reliable delivery!",
+  },
+  {    
+    id: 14,
+    img: "https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/430126420/original/f4f4db5f48179890e4d7ec6a188ab5c19e6daf16/create-viral-tiktok-dropshipping-video-ads-tik-tok-ads-dropshipping-product-ad.jpg",
+    title: "Grow your business online with a beautiful video ad or product promo!",
+    seller: "Abdul Hameed", sellerInit: "AH", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Video Editor",
+    rating: 5.1, reviews: 24, pricePkr: 100, delivery: "1 day", revisions: "54",
+    waNumber: "923005682345",
+    tags: ["Video Editing Expert"],
+    searchKeys: "Grow your business online with a beautiful video ad or product promo! I am here to mix your pictures and video clips into a very neat and professional advertisement. It will show your logo, text, and special offers clearly to help you get more customers. Let's make your business video today!",
+    desc: "Grow your business online with a beautiful video ad or product promo! I am here to mix your pictures and video clips into a very neat and professional advertisement. It will show your logo, text, and special offers clearly to help you get more customers. Let's make your business video today!",
+  },
+  {    
+    id: 15,
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKIBw1PrpHlKdFGLpopBb89iuVqCJjp4y4tQ&s",
+    title: "Want your shop or business to show up on top when people search on Google Maps?",
+    seller: "Abdul Hameed", sellerInit: "AH", sellerColor: "#2196f3",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Video Editor",
+    rating: 6.1, reviews: 35, pricePkr: 200, delivery: "1 day", revisions: "83",
+    waNumber: "923005682345",
+    tags: ["Google Maps (GMB) Optimization"],
+    searchKeys: "",
+    desc: "Want your shop or business to show up on top when people search on Google Maps? I will setup and optimize your Google My Business (GMB) profile perfectly. I will add your right location, phone number, beautiful photos, and the best keywords so local customers can find you instantly. Let’s get your business on the map today!",
+  },
+  {  
+   id: 16,
+    img: "https://cdn.kwork.com/pics/t5/43/47687646-6a027aa5c8812.jpg?ver=1778547590",
+    title: "I will setup Google Merchant Center and shopping ads campaign",
+    seller: "Abdul Hameed", sellerInit: "OD", sellerColor: "#4caf50",
+    label: "Top Rated", badge: "top",
+    category: "ads", catLabel: "Google Ads",
+    rating: 5.0, reviews: 7, pricePkr: 50, delivery: "1 days", revisions: "40",
+    waNumber: "923005682345",
+    tags: ["YouTube Thumbnil"],
+    searchKeys: "google ads shopping merchant center ecommerce campaign",
+    desc: "Full Google Merchant Center account creation, product feed setup, shopping campaign management and conversion optimization. Perfect for eCommerce stores.",
+  },
+  { 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    id: 10,
+    img: "https://i.pinimg.com/736x/3d/89/60/3d89603ad5e7a77486ae3d7c75440360.jpg",
+    title: "I will create Google Knowledge Panel for Personal profile and Company",
+    seller: "babarmart_1", sellerInit: "B1", sellerColor: "#ff9800",
+    label: "Rising Talent", badge: null,
+    category: "seo", catLabel: "SEO",
+    rating: 4.9, reviews: 29, pricePkr: 5500, delivery: "4 days", revisions: "2",
+    waNumber: "923003333333",
+    tags: ["SEO", "Knowledge Panel", "Google"],
+    searchKeys: "seo knowledge panel google company personal profile",
+    desc: "Get your personal or company Knowledge Panel on Google. I specialize in creating fully verified panels that enhance credibility and searchability for businesses and individuals.",
+  },
+  {
+    id: 4,
+    img: "https://cdn.kwork.com/pics/t5/24/38438804-6794d5dc30d9d.jpg?ver=1737807324",
+    title: "I will design professional logo and brand identity for your business",
+    seller: "DesignMaestro", sellerInit: "DM", sellerColor: "#8b5cf6",
+    label: "Top Rated", badge: "top",
+    category: "design", catLabel: "Graphic Designer",
+    rating: 5.0, reviews: 124, pricePkr: 7000, delivery: "3 days", revisions: "Unlimited",
+    waNumber: "923004444444",
+    tags: ["Logo Design", "Branding", "Graphic Designer"],
+    searchKeys: "logo design branding graphic designer brand identity",
+    desc: "Professional logo and brand identity design for your business. I create unique, memorable, and versatile logos that represent your brand perfectly. Includes all file formats.",
+  },
+  {
+    id: 5,
+    img: "https://cdn.kwork.com/pics/t5/49/52503440-6a2175d525404.jpg?ver=1780577862",
+    title: "I will create stunning social media posts and graphics for your brand",
+    seller: "CreativePixel", sellerInit: "CP", sellerColor: "#ec4899",
+    label: "Top Rated", badge: null,
+    category: "design", catLabel: "Graphic Designer",
+    rating: 4.9, reviews: 87, pricePkr: 4000, delivery: "2 days", revisions: "3",
+    waNumber: "923005555555",
+    tags: ["Social Media", "Graphic Designer", "Canva"],
+    searchKeys: "social media graphics posts graphic designer canva instagram facebook",
+    desc: "Eye-catching social media graphics and posts for Instagram, Facebook, Twitter, and more. I create scroll-stopping visuals that match your brand and engage your audience.",
+  },
+  {
+    id: 6,
+    img: "https://cdn.kwork.com/pics/t5/93/49169314-6994d1b590f58.webp?ver=1771363979",
+    title: "I will design a modern and responsive website UI UX for your business",
+    seller: "WebCraft_Pro", sellerInit: "WC", sellerColor: "#0ea5e9",
+    label: "Top Rated Plus", badge: "top",
+    category: "design", catLabel: "Web Designer",
+    rating: 5.0, reviews: 203, pricePkr: 14000, delivery: "5 days", revisions: "5",
+    waNumber: "923006666666",
+    tags: ["Web Design", "UI UX", "Figma"],
+    searchKeys: "web design ui ux figma responsive website landing page",
+    desc: "Modern, clean, and fully responsive website UI/UX design using Figma. I design high-converting landing pages, portfolios, and business websites that look great on all devices.",
+  },
+  {
+    id: 7,
+    img: "https://cdn.kwork.com/pics/t5/45/52520832-6a225e3d857df.webp?ver=1780638856",
+    title: "I will create professional banner ads and display advertising graphics",
+    seller: "BannerKing", sellerInit: "BK", sellerColor: "#f97316",
+    label: "Rising Talent", badge: null,
+    category: "design", catLabel: "Graphic Designer",
+    rating: 4.8, reviews: 45, pricePkr: 5500, delivery: "2 days", revisions: "3",
+    waNumber: "923007777777",
+    tags: ["Banner Design", "Display Ads", "Graphic Designer"],
+    searchKeys: "banner design display ads graphic designer advertising creative",
+    desc: "Professional banner ads and display advertising graphics for Google Ads, Facebook, Instagram, and any platform. I create high-quality designs in all standard sizes.",
+  },
+  {
+    id: 8,
+    img: "https://cdn.kwork.com/pics/t5/66/51330205-69ebb3ca60491.jpg?ver=1777230352",
+    title: "Trust pilot, Yelp, GMB and GBP Local SEO management for your business",
+    seller: "PPC_exp03", sellerInit: "PE", sellerColor: "#e91e63",
+    label: null, badge: null,
+    category: "gmb", catLabel: "GMB / Local SEO",
+    rating: 3.9, reviews: 9, pricePkr: 8500, delivery: "5 days", revisions: "1",
+    waNumber: "923008888888",
+    tags: ["GMB", "Local SEO", "Trustpilot"],
+    searchKeys: "gmb local seo google business trustpilot yelp gbp",
+    desc: "Complete local SEO management including Google Business Profile optimization, Trustpilot setup, Yelp listing, and review management. Improve your local search rankings.",
+  },
+  {
+    
+    id: 10,
+    img: "https://cdn.kwork.com/pics/t5/96/51633213-69f8f2ec27286.jpg?ver=1777923594",
+    title: "Google business page audit, complete check up and review",
+    seller: "Mr_RaseL", sellerInit: "MR", sellerColor: "#9c27b0",
+    label: null, badge: null,
+    category: "gmb", catLabel: "GMB / Local SEO",
+    rating: 3.5, reviews: 10, pricePkr: 5500, delivery: "2 days", revisions: "2",
+    waNumber: "923010101010",
+    tags: ["GMB", "Google Business", "Audit"],
+    searchKeys: "gmb google business audit local seo check review",
+    desc: "Comprehensive Google Business page audit identifying all issues, opportunities, and improvements. Detailed report with actionable recommendations to boost local visibility.",
+  },
+  {
+    id: 11,
+    img: "https://i.pinimg.com/736x/4f/c2/53/4fc2531d91016b6d2402c2c4951faeb6.jpg",
+    title: "I will fix any AdSense issue and optimize ad placement for max earnings",
+    seller: "MuhammadBaqir", sellerInit: "MB", sellerColor: "#00bcd4",
+    label: "Top Rated Plus", badge: "top",
+    category: "adsense", catLabel: "AdSense",
+    rating: 4.9, reviews: 392, pricePkr: 33000, delivery: "4 days", revisions: "Unlimited",
+    waNumber: "923011111111",
+    tags: ["AdSense", "Monetization", "Google Ads"],
+    searchKeys: "adsense monetization ad placement earnings fix google ads",
+    desc: "Expert AdSense troubleshooting and optimization. Fix account bans, policy violations, low CPC, and optimize ad placements to maximize revenue. 6+ years experience.",
+  },
+  {
+    id: 12,
+    img: "https://i.pinimg.com/736x/3d/89/60/3d89603ad5e7a77486ae3d7c75440360.jpg",
+    title: "Clean and remove Google My Business GMB negative reviews professionally",
+    seller: "googlesgraccia", sellerInit: "GG", sellerColor: "#607d8b",
+    label: null, badge: null,
+    category: "gmb", catLabel: "GMB / Local SEO",
+    rating: 5.0, reviews: 3, pricePkr: 5500, delivery: "7 days", revisions: "1",
+    waNumber: "923012121212",
+    tags: ["GMB", "Reputation", "Reviews"],
+    searchKeys: "gmb negative reviews remove clean google business reputation",
+    desc: "Professional service to report, flag, and remove fake or policy-violating negative reviews from your Google Business Profile. Protect your reputation and improve your star rating.",
+  },
+];
+
+// category style map
+const CAT_STYLE = {
+  seo:     { cls: "cat-seo",     color: "#0ea5e9" },
+  design:  { cls: "cat-design",  color: "#8b5cf6" },
+  ads:     { cls: "cat-ads",     color: "#f59e0b" },
+  gmb:     { cls: "cat-gmb",     color: "#10b981" },
+  adsense: { cls: "cat-adsense", color: "#ef4444" },
+};
+
+function fmtPkr(n) { return "Rs " + n.toLocaleString("en-PK"); }
+
+// ── SEARCH ────────────────────────────────────────────────
+const searchInput = document.getElementById("searchInput");
+const suggestionsEl = document.getElementById("suggestions");
+let activeIdx = -1;
+
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if (!q) { hideSuggestions(); renderGrid(gigs); updateResultInfo(gigs.length, ""); return; }
+  showSuggestions(q);
+  doSearch(); // live filter as user types
+});
+
+searchInput.addEventListener("keydown", e => {
+  const items = suggestionsEl.querySelectorAll(".suggestion-item");
+  if (e.key === "ArrowDown") { activeIdx = Math.min(activeIdx+1, items.length-1); updateActive(items); }
+  else if (e.key === "ArrowUp") { activeIdx = Math.max(activeIdx-1, -1); updateActive(items); }
+  else if (e.key === "Enter") {
+    if (activeIdx >= 0 && items[activeIdx]) searchInput.value = items[activeIdx].dataset.val;
+    hideSuggestions(); doSearch();
+  } else if (e.key === "Escape") { hideSuggestions(); }
+});
+
+function updateActive(items) { items.forEach((it,i) => it.classList.toggle("active", i===activeIdx)); }
+
+function showSuggestions(q) {
+  activeIdx = -1;
+  const allWords = new Set();
+  // Tags as primary suggestions
+  gigs.forEach(g => {
+    g.tags.forEach(t => { if (t.toLowerCase().startsWith(q) || t.toLowerCase().includes(q)) allWords.add(t); });
+    (g.title + " " + g.searchKeys).split(/\s+/).forEach(w => {
+      if (w.toLowerCase().startsWith(q) && w.length > 2) allWords.add(w);
+    });
+  });
+  const matches = [...allWords].slice(0, 7);
+  if (!matches.length) { hideSuggestions(); return; }
+  suggestionsEl.innerHTML = matches.map(w =>
+    `<div class="suggestion-item" data-val="${w}" onclick="pickSuggestion('${w}')">🔍 ${w}</div>`
+  ).join("");
+  suggestionsEl.classList.add("show");
+}
+
+function hideSuggestions() { suggestionsEl.classList.remove("show"); }
+function pickSuggestion(val) { searchInput.value = val; hideSuggestions(); doSearch(); }
+
+function doSearch() {
+  const q = searchInput.value.trim().toLowerCase();
+  hideSuggestions();
+  if (!q) { renderGrid(gigs); updateResultInfo(gigs.length, ""); return; }
+  const filtered = gigs.filter(g =>
+    g.title.toLowerCase().includes(q) ||
+    g.tags.some(t => t.toLowerCase().includes(q)) ||
+    g.seller.toLowerCase().includes(q) ||
+    g.catLabel.toLowerCase().includes(q) ||
+    g.searchKeys.toLowerCase().includes(q) ||
+    g.desc.toLowerCase().includes(q)
+  );
+  renderGrid(filtered);
+  updateResultInfo(filtered.length, q);
+}
+
+function updateResultInfo(count, q) {
+  const el = document.getElementById("resultInfo");
+  if (!q) { el.textContent = `Showing all ${count} services`; return; }
+  el.innerHTML = count
+    ? `<strong>${count}</strong> service${count!==1?"s":""} found for "<strong>${q}</strong>"`
+    : "";
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function renderGrid(list) {
+  const grid = document.getElementById("gigGrid");
+  const noRes = document.getElementById("noResults");
+  if (!list.length) { grid.innerHTML = ""; noRes.classList.add("show"); return; }
+  noRes.classList.remove("show");
+  grid.innerHTML = list.map(g => {
+    const cs = CAT_STYLE[g.category] || CAT_STYLE.seo;
+    const pkr = fmtPkr(g.pricePkr);
+    const tagsHtml = g.tags.map(t => `<span class="card-tag">${t}</span>`).join("");
+    return `
+    <div class="card" onclick="openPopup(${g.id})">
+      <img class="card-thumb" src="${g.img}" alt="${g.title}" loading="lazy" onerror="this.style.background='#e8e8e8'">
+      ${g.badge === "top" ? '<span class="top-badge badge-top">Top Rated</span>' : ""}
+      ${g.badge === "choice" ? '<span class="top-badge badge-choice">Kwork\'s Choice</span>' : ""}
+      <div class="card-body">
+        <div class="seller-row">
+          <div class="avatar" style="background:linear-gradient(135deg,${g.sellerColor},${g.sellerColor}99)">${g.sellerInit}</div>
+          <span class="seller-name">${g.seller}</span>
+          ${g.label ? `<span class="seller-label">${g.label}</span>` : ""}
+        </div>
+        <div class="card-tags">${tagsHtml}</div>
+        <div class="card-title">${g.title}</div>
+        <div class="card-footer">
+          <div class="rating">
+            <span class="stars">★</span>
+            <strong>${g.rating}</strong>
+            <span class="rating-count">(${g.reviews})</span>
+          </div>
+          <div class="price"><span>From </span>${pkr}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ── POPUP ─────────────────────────────────────────────────
+function openPopup(id) {
+  const g = gigs.find(x => x.id === id);
+  if (!g) return;
+  const cs = CAT_STYLE[g.category] || CAT_STYLE.seo;
+  const pkr = g.pricePkr;
+
+  document.getElementById("popupImg").src = g.img;
+  document.getElementById("popupImg").alt = g.title;
+  document.getElementById("popupAvatar").innerHTML =
+    `<div style="width:100%;height:100%;background:linear-gradient(135deg,${g.sellerColor},${g.sellerColor}99);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.88rem">${g.sellerInit}</div>`;
+  document.getElementById("popupSellerName").textContent = g.seller;
+  document.getElementById("popupSellerSub").textContent = g.label || "Seller";
+  document.getElementById("popupTitle").textContent = g.title;
+  document.getElementById("popupRating").innerHTML =
+    `<span class="stars">${"★".repeat(Math.floor(g.rating))}</span><span class="num">${g.rating}</span><span class="cnt">(${g.reviews} reviews)</span>`;
+  document.getElementById("popupTags").innerHTML = g.tags.map(t => `<span class="tag">${t}</span>`).join("");
+  document.getElementById("popupDesc").textContent = g.desc;
+  document.getElementById("popupMeta").innerHTML = `
+    <div class="meta-item"><div class="meta-val">${g.delivery}</div><div class="meta-label">Delivery</div></div>
+    <div class="meta-item"><div class="meta-val">${g.revisions}</div><div class="meta-label">Revisions</div></div>
+    <div class="meta-item"><div class="meta-val">${g.reviews}</div><div class="meta-label">Orders Done</div></div>`;
+  document.getElementById("popupPrice").textContent = fmtPkr(pkr);
+
+  const waNumber = g.waNumber || WHATSAPP_NUMBER;
+  const msg = encodeURIComponent(`Assalam o Alaikum! Mujhe aapki yeh service chahiye: "${g.title}" — ${fmtPkr(pkr)}. Mehrbani karke details batayein.`);
+  document.getElementById("popupWA").href = `https://wa.me/${waNumber}?text=${msg}`;
+
+  document.getElementById("overlay").classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function closePopup() { document.getElementById("overlay").classList.remove("active"); document.body.style.overflow = ""; }
+function closePopupOutside(e) { if (e.target === document.getElementById("overlay")) closePopup(); }
+
+// ── CALCULATOR ────────────────────────────────────────────
+document.getElementById("rateDisplay").textContent = USD_TO_PKR.toLocaleString();
+
+function openCalc() { document.getElementById("calcOverlay").classList.add("active"); document.body.style.overflow = "hidden"; }
+function closeCalc() { document.getElementById("calcOverlay").classList.remove("active"); document.body.style.overflow = ""; }
+function closeCalcOutside(e) { if (e.target === document.getElementById("calcOverlay")) closeCalc(); }
+
+function calcUsdToPkr() {
+  const v = parseFloat(document.getElementById("usdInput").value);
+  document.getElementById("usdResult").textContent = isNaN(v) || v < 0 ? "—" : fmtPkr(Math.round(v * USD_TO_PKR));
+}
+function calcPkrToUsd() {
+  const v = parseFloat(document.getElementById("pkrInput").value);
+  document.getElementById("pkrResult").textContent = isNaN(v) || v < 0 ? "—" : "$ " + (v / USD_TO_PKR).toFixed(2) + " USD";
+}
+
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closePopup(); closeCalc(); } });
+document.addEventListener("click", e => { if (!e.target.closest(".search-container")) hideSuggestions(); });
+
+renderGrid(gigs);
+updateResultInfo(gigs.length, "");
+</script>
+</body>
+</html>
