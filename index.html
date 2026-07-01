@@ -29,7 +29,7 @@
     justify-content: space-between; position: sticky; top: 0; z-index: 200;
     box-shadow: 0 1px 6px rgba(0,0,0,0.06);
   }
-  .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); letter-spacing: -1px; }
+  .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); letter-spacing: -1px; cursor: pointer; }
   .logo span { color: var(--text-dark); }
   .calc-btn {
     display: flex; align-items: center; gap: 6px;
@@ -40,6 +40,47 @@
     font-family: 'Inter', sans-serif;
   }
   .calc-btn:hover { background: #ffedd5; }
+  .wa-support-btn {
+    background: #e9fbf1; color: var(--wa-dark); border-color: #b7f0cd;
+    text-decoration: none;
+  }
+  .wa-support-btn:hover { background: #d9f7e6; }
+
+  /* HAMBURGER MENU BUTTON */
+  .hamburger-btn {
+    display: flex; flex-direction: column; justify-content: center; gap: 4px;
+    width: 34px; height: 34px; background: transparent; border: none;
+    cursor: pointer; padding: 6px; border-radius: 6px; transition: background .2s;
+  }
+  .hamburger-btn:hover { background: var(--bg); }
+  .hamburger-btn span {
+    display: block; width: 100%; height: 2.5px; border-radius: 2px;
+    background: var(--text-dark);
+  }
+
+  /* ALL CATEGORIES DROPDOWN MENU */
+  .menu-overlay {
+    display: none; position: fixed; inset: 0;
+    background: var(--overlay); z-index: 500;
+  }
+  .menu-overlay.show { display: block; animation: fadeIn .2s ease; }
+  .menu-dropdown {
+    position: absolute; top: 0; left: 0; height: 100%; width: 280px; max-width: 82vw;
+    background: var(--white); box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+    padding: 18px 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+    animation: slideIn .22s ease;
+  }
+  @keyframes slideIn { from { transform: translateX(-100%);} to { transform: translateX(0);} }
+  .menu-dropdown-title {
+    font-size: .95rem; font-weight: 700; color: var(--text-dark);
+    padding: 4px 10px 12px; border-bottom: 1px solid var(--border); margin-bottom: 6px;
+  }
+  .menu-item {
+    text-align: left; background: transparent; border: none; border-radius: 8px;
+    padding: 10px 12px; font-size: .87rem; font-weight: 600; color: var(--text-mid);
+    cursor: pointer; font-family: 'Inter', sans-serif; transition: background .15s, color .15s;
+  }
+  .menu-item:hover { background: var(--tag-bg); color: var(--primary); }
 
   /* STICKY SEARCH */
   .search-wrap {
@@ -79,6 +120,24 @@
     transition: background .15s;
   }
   .suggestion-item:hover, .suggestion-item.active { background: #f0faf5; color: var(--primary); }
+
+  /* CATEGORY BAR */
+  .category-bar {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    position: sticky; top: 127px; z-index: 185;
+  }
+  .category-scroll {
+    display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 40px;
+  }
+  .cat-chip {
+    flex-shrink: 0; white-space: nowrap;
+    padding: 8px 16px; border-radius: 20px;
+    border: 1.5px solid var(--border); background: #fff;
+    font-size: .82rem; font-weight: 600; color: var(--text-mid);
+    cursor: pointer; transition: all .2s; font-family: 'Inter', sans-serif;
+  }
+  .cat-chip:hover { border-color: var(--primary); color: var(--primary); }
+  .cat-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
 
   /* PAGE */
   .page { max-width: 1200px; margin: 0 auto; padding: 24px 24px 60px; }
@@ -128,7 +187,11 @@
     display: flex; align-items: center; justify-content: center;
     color: #fff; font-size: .68rem; font-weight: 700; flex-shrink: 0;
   }
-  .seller-name { font-size: .81rem; font-weight: 600; color: var(--text-dark); }
+  .seller-name { 
+    font-size: .81rem; font-weight: 600; color: var(--text-dark); 
+    cursor: pointer; text-decoration: underline;
+  }
+  .seller-name:hover { color: var(--primary); }
   .seller-label {
     font-size: .66rem; font-weight: 700; color: var(--primary);
     border: 1px solid var(--primary); border-radius: 4px;
@@ -148,6 +211,114 @@
   .rating-count { color: var(--text-light); font-size: .74rem; }
   .price { font-size: .92rem; font-weight: 700; color: var(--text-dark); }
   .price span { font-size: .7rem; font-weight: 500; color: var(--text-light); }
+
+  /* SELLER PROFILE MODAL */
+  .seller-overlay {
+    display: none; position: fixed; inset: 0;
+    background: var(--overlay); z-index: 1000;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .seller-overlay.active { display: flex; animation: fadeIn .2s ease; }
+  .seller-profile {
+    background: var(--white); border-radius: 16px; max-width: 650px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: slideUp .25s ease; position: relative;
+  }
+  .seller-close {
+    position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.9);
+    border: none; cursor: pointer; font-size: 1.3rem; color: var(--text-light);
+    z-index: 2; line-height: 1; border-radius: 50%; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center; transition: color .15s;
+  }
+  .seller-close:hover { color: var(--text-dark); }
+  .seller-header {
+    padding: 24px 22px;
+    background: linear-gradient(135deg, #f0faf5, #e0f5ed);
+    border-radius: 16px 16px 0 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .seller-header-top {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 14px;
+  }
+  .seller-profile-avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 1.6rem; flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .seller-profile-info h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+  .seller-profile-label {
+    display: inline-block; font-size: .72rem; font-weight: 700; color: var(--primary);
+    background: var(--tag-bg); border: 1px solid #c3e8d5; border-radius: 4px;
+    padding: 2px 8px; margin-bottom: 4px;
+  }
+  .seller-profile-subtitle { font-size: .85rem; color: var(--text-mid); }
+  .seller-profile-stats {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .seller-stat {
+    background: rgba(255,255,255,0.9); padding: 8px 14px; border-radius: 8px;
+    font-size: .8rem; font-weight: 600; display: flex; align-items: center; gap: 6px;
+    border: 1px solid var(--border);
+  }
+  .seller-stat-icon { font-size: 1rem; }
+  .seller-stat span { color: var(--primary); font-weight: 700; }
+  .seller-body { padding: 22px; }
+  .seller-section-title {
+    font-size: 1rem; font-weight: 700; margin-bottom: 12px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .seller-bio {
+    font-size: .88rem; color: var(--text-mid); line-height: 1.7;
+    margin-bottom: 20px; background: var(--bg); padding: 14px 16px;
+    border-radius: var(--radius-sm); border-left: 3px solid var(--primary);
+  }
+  .seller-details-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .seller-detail-item {
+    background: var(--bg); padding: 12px 14px; border-radius: 8px;
+  }
+  .seller-detail-label { font-size: .72rem; color: var(--text-light); margin-bottom: 4px; text-transform: uppercase; font-weight: 600; }
+  .seller-detail-value { font-size: .9rem; font-weight: 600; color: var(--text-dark); }
+  .seller-skills {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+  }
+  .seller-skill {
+    background: var(--tag-bg); color: var(--tag-text); font-size: .78rem; font-weight: 600;
+    padding: 6px 14px; border-radius: 20px; border: 1px solid #c3e8d5;
+  }
+  .seller-contact-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: var(--wa); color: #fff; padding: 14px 20px; border-radius: var(--radius-sm);
+    font-size: .95rem; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
+    transition: background .2s, transform .15s; width: 100%; margin-bottom: 20px;
+  }
+  .seller-contact-btn:hover { background: var(--wa-dark); transform: scale(1.01); }
+  .seller-contact-btn svg { width: 22px; height: 22px; fill: #fff; flex-shrink: 0; }
+  .seller-gigs-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;
+  }
+  .seller-gig-card {
+    border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    cursor: pointer; transition: box-shadow .2s, transform .2s;
+  }
+  .seller-gig-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .seller-gig-img { width: 100%; height: 110px; object-fit: cover; display: block; }
+  .seller-gig-info { padding: 10px; }
+  .seller-gig-title {
+    font-size: .8rem; font-weight: 500; color: var(--text-mid);
+    margin-bottom: 6px; line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .seller-gig-footer {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .seller-gig-price { font-size: .82rem; font-weight: 700; }
+  .seller-gig-rating { display: flex; align-items: center; gap: 4px; font-size: .72rem; }
+  .seller-gig-rating .stars { font-size: .72rem; }
 
   /* POPUP */
   .overlay {
@@ -183,7 +354,8 @@
     display: flex; align-items: center; justify-content: center;
     color: #fff; font-weight: 700; font-size: .88rem; flex-shrink: 0;
   }
-  .popup-seller-name { font-size: .92rem; font-weight: 700; }
+  .popup-seller-name { font-size: .92rem; font-weight: 700; cursor: pointer; text-decoration: underline; }
+  .popup-seller-name:hover { color: var(--primary); }
   .popup-seller-sub { font-size: .75rem; color: var(--text-light); }
   .popup-title { font-size: 1.05rem; font-weight: 700; line-height: 1.45; margin-bottom: 10px; }
   .popup-rating { display: flex; align-items: center; gap: 6px; margin-bottom: 13px; }
@@ -217,6 +389,8 @@
   .btn-wa svg { width: 19px; height: 19px; fill: #fff; flex-shrink: 0; }
   .popup::-webkit-scrollbar { width: 5px; }
   .popup::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+  .seller-profile::-webkit-scrollbar { width: 5px; }
+  .seller-profile::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 
   /* CALCULATOR MODAL */
   .calc-overlay {
@@ -273,20 +447,49 @@
 
   @media (max-width: 600px) {
     header { padding: 12px 16px; }
-    .search-wrap { padding: 12px 16px 14px; top: 53px; }
+    .search-wrap { padding: 12px 16px 14px; }
+    .category-scroll { padding: 10px 14px; gap: 6px; }
+    .cat-chip { padding: 6px 12px; font-size: .75rem; }
     .page { padding: 16px 14px 50px; }
     .popup-body { padding: 14px 15px 20px; }
+    .seller-gigs-grid { grid-template-columns: 1fr; }
+    .seller-details-grid { grid-template-columns: 1fr; }
+    .seller-header-top { flex-direction: column; text-align: center; }
+    .seller-profile-stats { justify-content: center; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">OnePilot<span>Tools.com</span></div>
-  <button class="calc-btn" onclick="openCalc()">
-    💱 PKR / USD Calculator
-  </button>
+  <div style="display:flex; align-items:center; gap:12px;">
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="logo" onclick="goHome()" title="Go to homepage">Sasta<span>Kaam.com</span></div>
+  </div>
+  <a class="calc-btn wa-support-btn" href="https://wa.me/923005682345?text=Assalam%20o%20Alaikum%2C%20mujhe%20SastaKaam.com%20se%20support%20chahiye." target="_blank" rel="noopener">
+    💬 WhatsApp Support
+  </a>
 </header>
+
+<!-- ALL CATEGORIES DROPDOWN MENU (opens via hamburger icon) -->
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenuOutside(event)">
+  <div class="menu-dropdown" id="menuDropdown">
+    <div class="menu-dropdown-title">All Categories</div>
+    <button class="menu-item" onclick="selectCategory('all'); closeMenu();">Sab / All</button>
+    <button class="menu-item" onclick="selectCategory('cv'); closeMenu();">📄 CV / Resume</button>
+    <button class="menu-item" onclick="selectCategory('courses'); closeMenu();">🎓 Courses</button>
+    <button class="menu-item" onclick="selectCategory('design'); closeMenu();">🎨 Graphic Design</button>
+    <button class="menu-item" onclick="selectCategory('seo'); closeMenu();">🔍 SEO</button>
+    <button class="menu-item" onclick="selectCategory('gmb'); closeMenu();">📍 GMB / Local SEO</button>
+    <button class="menu-item" onclick="selectCategory('ads'); closeMenu();">📢 Google Ads</button>
+    <button class="menu-item" onclick="selectCategory('adsense'); closeMenu();">💰 AdSense</button>
+    <button class="menu-item" onclick="selectCategory('office'); closeMenu();">📊 Office & Docs</button>
+    <button class="menu-item" onclick="selectCategory('video'); closeMenu();">🎬 Video Editing</button>
+    <button class="menu-item" onclick="selectCategory('combo'); closeMenu();">🎁 Combo Offer</button>
+  </div>
+</div>
 
 <!-- STICKY SEARCH -->
 <div class="search-wrap">
@@ -302,12 +505,78 @@
   </div>
 </div>
 
+
 <div class="page">
   <div class="result-info" id="resultInfo"></div>
   <div class="grid" id="gigGrid"></div>
   <div class="no-results" id="noResults">
     <h3>No services found 😕</h3>
     <p>Try searching with different keywords like "SEO", "Designer", "Google Ads"</p>
+  </div>
+</div>
+
+<!-- SELLER PROFILE MODAL -->
+<div class="seller-overlay" id="sellerOverlay" onclick="closeSellerProfileOutside(event)">
+  <div class="seller-profile" id="sellerProfile">
+    <button class="seller-close" onclick="closeSellerProfile()">✕</button>
+    <div class="seller-header">
+      <div class="seller-header-top">
+        <div class="seller-profile-avatar" id="sellerProfileAvatar"></div>
+        <div class="seller-profile-info">
+          <h2 id="sellerProfileName"></h2>
+          <div class="seller-profile-label" id="sellerProfileLabel"></div>
+          <div class="seller-profile-subtitle" id="sellerProfileSubtitle"></div>
+        </div>
+      </div>
+      <div class="seller-profile-stats">
+        <div class="seller-stat">
+          <span class="seller-stat-icon">⭐</span>
+          Rating: <span id="sellerProfileRating"></span>
+        </div>
+        <div class="seller-stat">
+          <span class="seller-stat-icon">💬</span>
+          Reviews: <span id="sellerProfileReviews"></span>
+        </div>
+        <div class="seller-stat">
+          <span class="seller-stat-icon">📦</span>
+          Gigs: <span id="sellerProfileGigs"></span>
+        </div>
+        <div class="seller-stat">
+          <span class="seller-stat-icon">📅</span>
+          Member: <span id="sellerProfileSince"></span>
+        </div>
+      </div>
+    </div>
+    <div class="seller-body">
+      <h3 class="seller-section-title">👤 About Seller</h3>
+      <div class="seller-bio" id="sellerBio"></div>
+      <div class="seller-details-grid" id="sellerDetailsGrid">
+        <div class="seller-detail-item">
+          <div class="seller-detail-label">📍 Location</div>
+          <div class="seller-detail-value" id="sellerLocation">Pakistan</div>
+        </div>
+        <div class="seller-detail-item">
+          <div class="seller-detail-label">⏰ Response Time</div>
+          <div class="seller-detail-value" id="sellerResponseTime">1 Hour</div>
+        </div>
+        <div class="seller-detail-item">
+          <div class="seller-detail-label">🌍 Languages</div>
+          <div class="seller-detail-value" id="sellerLanguages">Urdu, English</div>
+        </div>
+        <div class="seller-detail-item">
+          <div class="seller-detail-label">🎓 Experience</div>
+          <div class="seller-detail-value" id="sellerExperience">3+ Years</div>
+        </div>
+      </div>
+      <h3 class="seller-section-title">🛠️ Skills & Expertise</h3>
+      <div class="seller-skills" id="sellerSkills"></div>
+      <a class="seller-contact-btn" id="sellerContactBtn" href="#" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp Per Rabta Karain
+      </a>
+      <h3 class="seller-section-title">📋 Seller's Services</h3>
+      <div class="seller-gigs-grid" id="sellerGigsGrid"></div>
+    </div>
   </div>
 </div>
 
@@ -344,57 +613,132 @@
   </div>
 </div>
 
-<!-- CALCULATOR MODAL -->
-<div class="calc-overlay" id="calcOverlay" onclick="closeCalcOutside(event)">
-  <div class="calc-modal">
-    <div class="calc-header">
-      <button class="calc-close" onclick="closeCalc()">✕</button>
-      <h3>💱 Currency Calculator</h3>
-      <p>Dollar aur Rupay mein convert karein</p>
-    </div>
-    <div class="calc-body">
-      <div class="calc-rate-info">
-        <span>📌</span>
-        <span>Rate: <strong>1 USD = <span id="rateDisplay">278.50</span> PKR</strong> (approximate)</span>
-      </div>
-
-      <div class="calc-section">
-        <label>🇺🇸 USD → PKR</label>
-        <div class="calc-input-row">
-          <input type="number" id="usdInput" placeholder="Enter USD amount" min="0" oninput="calcUsdToPkr()">
-          <span class="unit-label">USD</span>
-        </div>
-        <div class="calc-result" id="usdResult">—</div>
-      </div>
-
-      <hr class="calc-divider">
-
-      <div class="calc-section">
-        <label>🇵🇰 PKR → USD</label>
-        <div class="calc-input-row">
-          <input type="number" id="pkrInput" placeholder="Enter PKR amount" min="0" oninput="calcPkrToUsd()">
-          <span class="unit-label">PKR</span>
-        </div>
-        <div class="calc-result" id="pkrResult">—</div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script>
 const WHATSAPP_NUMBER = "923005682345";
-const USD_TO_PKR = 278.50; // approximate rate
+const USD_TO_PKR = 278.50;
+
+// ── SELLER PROFILES DATA ──────────────────────────────────
+const sellerProfiles = {
+  "Abdul Hameed": {
+    subtitle: "CV Specialist | Office Expert | Video Editor",
+    bio: "Assalam o Alaikum! Main Abdul Hameed hoon. Main professional CV/Resume banata hoon, Excel sheets clean karta hoon, Presentations design karta hoon, aur Video Editing bhi karta hoon. Meri priority client ki satisfaction hai. Main har project ko time par deliver karta hoon aur unlimited revisions deta hoon jab tak client 100% satisfied na ho jaye. Aap mujhse WhatsApp par easily contact kar sakte hain!",
+    location: "Lahore, Pakistan",
+    responseTime: "30 Minutes",
+    languages: "Urdu, English, Punjabi",
+    experience: "4+ Years",
+    memberSince: "2021",
+    skills: ["CV Design", "Resume Writing", "Excel", "PowerPoint", "Video Editing", "Thesis Formatting", "Assignment Help", "Google Maps"]
+  },
+  "Mirza Ibrar": {
+    subtitle: "Graphic Designer | Print Media Expert",
+    bio: "Hello! Main Mirza Ibrar hoon, ek professional Graphic Designer. Main Visiting Cards, Letterheads, Certificates, Bill Books, Flyers, Doctor Pads, aur Social Media Graphics design karta hoon. Meri designs modern, clean aur print-ready hoti hain. Main Canva, Adobe Illustrator aur Photoshop mein expert hoon. Har client ko unique aur professional design milta hai. Aap ka brand meri designs se different dikhega!",
+    location: "Karachi, Pakistan",
+    responseTime: "1 Hour",
+    languages: "Urdu, English",
+    experience: "5+ Years",
+    memberSince: "2020",
+    skills: ["Visiting Card", "Letterhead", "Certificate", "Bill Book", "Flyer Design", "Doctor Pad", "Social Media", "Brand Identity"]
+  },
+  "babarmart_1": {
+    subtitle: "SEO Expert | Knowledge Panel Specialist",
+    bio: "Main Google Knowledge Panel create karne mein expert hoon. Personal profiles aur companies ke liye verified Knowledge Panels banata hoon jo Google search mein dikhte hain. Yeh credibility aur visibility boost karta hai. SEO techniques use kar ke aap ka brand Google par establish hota hai.",
+    location: "Islamabad, Pakistan",
+    responseTime: "2 Hours",
+    languages: "Urdu, English",
+    experience: "6+ Years",
+    memberSince: "2019",
+    skills: ["SEO", "Knowledge Panel", "Google Search", "Brand Building", "Reputation Management", "Local SEO"]
+  },
+  "DesignMaestro": {
+    subtitle: "Logo & Brand Identity Designer",
+    bio: "I am a professional logo and brand identity designer with 7+ years of experience. I create unique, memorable, and versatile logos that perfectly represent your brand. Every design is crafted with attention to detail and delivered in all file formats you need.",
+    location: "Rawalpindi, Pakistan",
+    responseTime: "1 Hour",
+    languages: "Urdu, English",
+    experience: "7+ Years",
+    memberSince: "2018",
+    skills: ["Logo Design", "Brand Identity", "Typography", "Illustration", "Adobe Illustrator", "Vector Graphics", "Color Theory"]
+  },
+  "CreativePixel": {
+    subtitle: "Social Media Graphics Expert",
+    bio: "I create eye-catching social media graphics and posts for Instagram, Facebook, Twitter, and more. My designs are scroll-stopping visuals that match your brand and engage your audience. I use Canva and Adobe tools to deliver stunning results.",
+    location: "Lahore, Pakistan",
+    responseTime: "45 Minutes",
+    languages: "Urdu, English",
+    experience: "3+ Years",
+    memberSince: "2022",
+    skills: ["Social Media", "Canva", "Instagram", "Facebook", "Content Design", "Brand Consistency", "Story Highlights"]
+  },
+  "WebCraft_Pro": {
+    subtitle: "UI/UX Designer | Figma Expert",
+    bio: "I design modern, clean, and fully responsive website UI/UX using Figma. I specialize in high-converting landing pages, portfolios, and business websites that look great on all devices. My designs focus on user experience and conversion optimization.",
+    location: "Karachi, Pakistan",
+    responseTime: "2 Hours",
+    languages: "Urdu, English",
+    experience: "8+ Years",
+    memberSince: "2017",
+    skills: ["Figma", "UI Design", "UX Design", "Web Design", "Prototyping", "Responsive Design", "Design Systems"]
+  },
+  "BannerKing": {
+    subtitle: "Display Ads & Banner Specialist",
+    bio: "I create professional banner ads and display advertising graphics for Google Ads, Facebook, Instagram, and any platform. I deliver high-quality designs in all standard sizes that help increase click-through rates.",
+    location: "Multan, Pakistan",
+    responseTime: "1 Hour",
+    languages: "Urdu, English",
+    experience: "4+ Years",
+    memberSince: "2021",
+    skills: ["Banner Design", "Display Ads", "Google Ads", "Facebook Ads", "Ad Creatives", "Marketing Graphics"]
+  },
+  "PPC_exp03": {
+    subtitle: "Local SEO & GMB Expert",
+    bio: "I provide complete local SEO management including Google Business Profile optimization, Trustpilot setup, Yelp listing, and review management. I help businesses improve their local search rankings and get more customers.",
+    location: "Faisalabad, Pakistan",
+    responseTime: "3 Hours",
+    languages: "Urdu, English",
+    experience: "5+ Years",
+    memberSince: "2020",
+    skills: ["GMB", "Local SEO", "Trustpilot", "Yelp", "Review Management", "Citation Building", "Google Maps"]
+  },
+  "Mr_RaseL": {
+    subtitle: "GMB Auditor & Local SEO Analyst",
+    bio: "I provide comprehensive Google Business page audits identifying all issues, opportunities, and improvements. My detailed reports come with actionable recommendations to boost local visibility and performance.",
+    location: "Dhaka, Bangladesh",
+    responseTime: "4 Hours",
+    languages: "Bengali, English, Urdu",
+    experience: "3+ Years",
+    memberSince: "2022",
+    skills: ["GMB Audit", "Local SEO", "Google Business", "SEO Analysis", "Reporting", "Strategy Planning"]
+  },
+  "MuhammadBaqir": {
+    subtitle: "AdSense Expert | Monetization Specialist",
+    bio: "I am an AdSense expert with 6+ years of experience. I fix account bans, policy violations, low CPC issues, and optimize ad placements to maximize revenue. I have helped hundreds of publishers increase their AdSense earnings significantly.",
+    location: "Karachi, Pakistan",
+    responseTime: "1 Hour",
+    languages: "Urdu, English",
+    experience: "6+ Years",
+    memberSince: "2019",
+    skills: ["AdSense", "Monetization", "Ad Optimization", "Policy Compliance", "Revenue Growth", "YouTube Monetization"]
+  },
+  "googlesgraccia": {
+    subtitle: "GMB Reputation Management Expert",
+    bio: "I specialize in professional GMB reputation management. I report, flag, and remove fake or policy-violating negative reviews from Google Business Profiles. I help protect your reputation and improve your star rating.",
+    location: "Pakistan",
+    responseTime: "6 Hours",
+    languages: "Urdu, English",
+    experience: "2+ Years",
+    memberSince: "2023",
+    skills: ["GMB", "Reputation Management", "Review Removal", "Google Policies", "Flagging", "Business Protection"]
+  }
+};
 
 // ── GIG DATA ──────────────────────────────────────────────
-// categories: seo | design | ads | gmb | adsense
-// catLabel: display name
-// searchKeys: extra keywords for search
 const gigs = [
   {
     id: 1,
     img: "https://i.pinimg.com/736x/e0/cd/d7/e0cdd7d0e43669b187d064c5ddd00250.jpg",
     title: "I will create professional CV for your job selection.",
-    seller: "Abdul Hameed", sellerInit: "AM", sellerColor: "#1dbf73",
+    seller: "Abdul Hameed", sellerInit: "AH", sellerColor: "#1dbf73",
     label: "Top Rated", badge: null,
     category: "seo", catLabel: "CV Specialist",
     rating: 10.7, reviews: 105, pricePkr: 50, delivery: "30 mintues", revisions: "105",
@@ -407,8 +751,7 @@ const gigs = [
     id: 2,
     img: "https://i.pinimg.com/736x/66/4e/75/664e756ab48d2f24fa1b43925ef6fe67.jpg",
     title: "The best combo offer for students and job seekers!",
-    seller: "Abdul Hameed", sellerInit: "MI", sellerColor: "#2196f3",
-    
+    seller: "Abdul Hameed", sellerInit: "AH", sellerColor: "#2196f3",
     category: "ads", catLabel: "Combo Offer",
     rating: 8.0, reviews: 115, pricePkr: 250, delivery: "1 day", revisions: "221",
     waNumber: "923005682345",
@@ -569,7 +912,7 @@ const gigs = [
     rating: 5.1, reviews: 24, pricePkr: 100, delivery: "1 day", revisions: "54",
     waNumber: "923005682345",
     tags: ["Video Editing Expert"],
-    searchKeys: "Grow your business online with a beautiful video ad or product promo! I am here to mix your pictures and video clips into a very neat and professional advertisement. It will show your logo, text, and special offers clearly to help you get more customers. Let's make your business video today!",
+    searchKeys: "Grow your business online with a beautiful video ad or product promo!",
     desc: "Grow your business online with a beautiful video ad or product promo! I am here to mix your pictures and video clips into a very neat and professional advertisement. It will show your logo, text, and special offers clearly to help you get more customers. Let's make your business video today!",
   },
   {    
@@ -583,7 +926,7 @@ const gigs = [
     waNumber: "923005682345",
     tags: ["Google Maps (GMB) Optimization"],
     searchKeys: "",
-    desc: "Want your shop or business to show up on top when people search on Google Maps? I will setup and optimize your Google My Business (GMB) profile perfectly. I will add your right location, phone number, beautiful photos, and the best keywords so local customers can find you instantly. Let’s get your business on the map today!",
+    desc: "Want your shop or business to show up on top when people search on Google Maps? I will setup and optimize your Google My Business (GMB) profile perfectly. I will add your right location, phone number, beautiful photos, and the best keywords so local customers can find you instantly. Let's get your business on the map today!",
   },
   {  
    id: 16,
@@ -599,22 +942,7 @@ const gigs = [
     desc: "Full Google Merchant Center account creation, product feed setup, shopping campaign management and conversion optimization. Perfect for eCommerce stores.",
   },
   { 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    id: 10,
+    id: 17,
     img: "https://i.pinimg.com/736x/3d/89/60/3d89603ad5e7a77486ae3d7c75440360.jpg",
     title: "I will create Google Knowledge Panel for Personal profile and Company",
     seller: "babarmart_1", sellerInit: "B1", sellerColor: "#ff9800",
@@ -627,7 +955,7 @@ const gigs = [
     desc: "Get your personal or company Knowledge Panel on Google. I specialize in creating fully verified panels that enhance credibility and searchability for businesses and individuals.",
   },
   {
-    id: 4,
+    id: 18,
     img: "https://cdn.kwork.com/pics/t5/24/38438804-6794d5dc30d9d.jpg?ver=1737807324",
     title: "I will design professional logo and brand identity for your business",
     seller: "DesignMaestro", sellerInit: "DM", sellerColor: "#8b5cf6",
@@ -640,7 +968,7 @@ const gigs = [
     desc: "Professional logo and brand identity design for your business. I create unique, memorable, and versatile logos that represent your brand perfectly. Includes all file formats.",
   },
   {
-    id: 5,
+    id: 19,
     img: "https://cdn.kwork.com/pics/t5/49/52503440-6a2175d525404.jpg?ver=1780577862",
     title: "I will create stunning social media posts and graphics for your brand",
     seller: "CreativePixel", sellerInit: "CP", sellerColor: "#ec4899",
@@ -653,7 +981,7 @@ const gigs = [
     desc: "Eye-catching social media graphics and posts for Instagram, Facebook, Twitter, and more. I create scroll-stopping visuals that match your brand and engage your audience.",
   },
   {
-    id: 6,
+    id: 20,
     img: "https://cdn.kwork.com/pics/t5/93/49169314-6994d1b590f58.webp?ver=1771363979",
     title: "I will design a modern and responsive website UI UX for your business",
     seller: "WebCraft_Pro", sellerInit: "WC", sellerColor: "#0ea5e9",
@@ -666,7 +994,7 @@ const gigs = [
     desc: "Modern, clean, and fully responsive website UI/UX design using Figma. I design high-converting landing pages, portfolios, and business websites that look great on all devices.",
   },
   {
-    id: 7,
+    id: 21,
     img: "https://cdn.kwork.com/pics/t5/45/52520832-6a225e3d857df.webp?ver=1780638856",
     title: "I will create professional banner ads and display advertising graphics",
     seller: "BannerKing", sellerInit: "BK", sellerColor: "#f97316",
@@ -679,7 +1007,7 @@ const gigs = [
     desc: "Professional banner ads and display advertising graphics for Google Ads, Facebook, Instagram, and any platform. I create high-quality designs in all standard sizes.",
   },
   {
-    id: 8,
+    id: 22,
     img: "https://cdn.kwork.com/pics/t5/66/51330205-69ebb3ca60491.jpg?ver=1777230352",
     title: "Trust pilot, Yelp, GMB and GBP Local SEO management for your business",
     seller: "PPC_exp03", sellerInit: "PE", sellerColor: "#e91e63",
@@ -692,8 +1020,7 @@ const gigs = [
     desc: "Complete local SEO management including Google Business Profile optimization, Trustpilot setup, Yelp listing, and review management. Improve your local search rankings.",
   },
   {
-    
-    id: 10,
+    id: 23,
     img: "https://cdn.kwork.com/pics/t5/96/51633213-69f8f2ec27286.jpg?ver=1777923594",
     title: "Google business page audit, complete check up and review",
     seller: "Mr_RaseL", sellerInit: "MR", sellerColor: "#9c27b0",
@@ -706,7 +1033,7 @@ const gigs = [
     desc: "Comprehensive Google Business page audit identifying all issues, opportunities, and improvements. Detailed report with actionable recommendations to boost local visibility.",
   },
   {
-    id: 11,
+    id: 24,
     img: "https://i.pinimg.com/736x/4f/c2/53/4fc2531d91016b6d2402c2c4951faeb6.jpg",
     title: "I will fix any AdSense issue and optimize ad placement for max earnings",
     seller: "MuhammadBaqir", sellerInit: "MB", sellerColor: "#00bcd4",
@@ -719,7 +1046,7 @@ const gigs = [
     desc: "Expert AdSense troubleshooting and optimization. Fix account bans, policy violations, low CPC, and optimize ad placements to maximize revenue. 6+ years experience.",
   },
   {
-    id: 12,
+    id: 25,
     img: "https://i.pinimg.com/736x/3d/89/60/3d89603ad5e7a77486ae3d7c75440360.jpg",
     title: "Clean and remove Google My Business GMB negative reviews professionally",
     seller: "googlesgraccia", sellerInit: "GG", sellerColor: "#607d8b",
@@ -731,10 +1058,89 @@ const gigs = [
     searchKeys: "gmb negative reviews remove clean google business reputation",
     desc: "Professional service to report, flag, and remove fake or policy-violating negative reviews from your Google Business Profile. Protect your reputation and improve your star rating.",
   },
+  {
+    id: 26,
+    img: "https://www.sevenmentor.com/_next/image?url=https%3A%2F%2Fsevenmentor-website.s3.eu-north-1.amazonaws.com%2Fuploads%2Fgallery%2FAdvanced_Excel_Header-1744716189201.webp&w=3840&q=75",
+    title: "Want to learn Microsoft Excel from the very beginning?",
+    seller: "Abdul Hameed", sellerInit: "AH", sellerColor: "#3b82f6",
+    label: "Top Rated", badge: "top",
+    category: "courses", catLabel: "MS Excel Course",
+    rating: 4.9, reviews: 76, pricePkr: 100, delivery: "1 day", revisions: "82",
+    waNumber: "923005682345",
+    tags: ["MS Advanced Excel (Course)"],
+    searchKeys: "Get lifetime access to all lessons",
+    desc: "Want to learn Microsoft Excel from the very beginning? I have made an easy video course that teaches you step-by-step. You will learn to make clean tables, use simple formulas, and manage data like a pro. Get lifetime access to all lessons and start learning at home today!",
+  },
+  {
+    id: 27,
+    img: "https://img-c.udemycdn.com/course/480x270/5142956_b392.jpg",
+    title: "Want to design beautiful presentations that impress everyone?",
+    seller: "Abdul Hameed", sellerInit: "AH", sellerColor: "#f59e0b",
+    label: null, badge: null,
+    category: "courses", catLabel: "Presentation",
+    rating: 8.7, reviews: 42, pricePkr:100, delivery: "1 day", revisions: "112",
+    waNumber: "923005682345",
+    tags: ["MS PowerPoint (Course)"],
+    searchKeys: "PPT class",
+    desc: "Want to design beautiful presentations that impress everyone? This easy video course teaches you how to create clean and professional slides step-by-step. You will learn to use nice colors, simple layouts, and cool animations for your work. Get full access right now and start making awesome slides!",
+  },
+  {
+    id: 28,
+    img: "https://img-c.udemycdn.com/course/480x270/6041916_2532.jpg?w=3840&q=75",
+    title: "Whether you need to format a university assignment, write an essay",
+    seller: "Abdul Hameed", sellerInit: "AH", sellerColor: "#f59e0b",
+    label: null, badge: null,
+    category: "courses", catLabel: "MS Word ",
+    rating: 6.2, reviews: 56, pricePkr: 100, delivery: "1 day", revisions: "132",
+    waNumber: "923005682345",
+    tags: ["MS Word (Course)"],
+    searchKeys: "MS office",
+    desc: "Whether you need to format a university assignment, write an essay, or prepare a corporate report, this MS Word course has you covered! We explain every single tool using very basic words and visual examples. Save your time, type with confidence, and make your work stand out. Get instant lifetime access today!",
+  },
+  {
+    id: 29,
+    img: "https://placehold.co/600x400/0ea5e9/ffffff?text=English+Speaking+Course",
+    title: "I will conduct spoken English course to improve your fluency",
+    seller: "Ayesha Malik", sellerInit: "AM", sellerColor: "#0ea5e9",
+    label: "Top Rated", badge: null,
+    category: "courses", catLabel: "English Speaking Course",
+    rating: 5.0, reviews: 89, pricePkr: 2000, delivery: "15 days", revisions: "Unlimited",
+    waNumber: "923004445566",
+    tags: ["English Course", "Spoken English"],
+    searchKeys: "english speaking course spoken english training class fluency",
+    desc: "Improve your English speaking and fluency with daily practice sessions, grammar correction, and confidence building exercises. Suitable for beginners and job interview preparation.",
+  },
+  {
+    id: 30,
+    img: "https://placehold.co/600x400/ef4444/ffffff?text=Freelancing+Course",
+    title: "I will teach freelancing course to start earning online",
+    seller: "Usman Tariq", sellerInit: "UT", sellerColor: "#ef4444",
+    label: "Top Rated Plus", badge: "top",
+    category: "courses", catLabel: "Freelancing Course",
+    rating: 4.9, reviews: 142, pricePkr: 2500, delivery: "10 days", revisions: "Unlimited",
+    waNumber: "923005556677",
+    tags: ["Freelancing", "Online Earning"],
+    searchKeys: "freelancing course online earning fiverr upwork training class",
+    desc: "Step by step freelancing course to help you set up your profile, find clients, and start earning on platforms like Fiverr and Upwork. Includes real examples and proposal templates.",
+  },
+  {
+    id: 31,
+    img: "https://placehold.co/600x400/10b981/ffffff?text=Excel+Data+Entry+Course",
+    title: "I will teach Excel and data entry course for office jobs",
+    seller: "Hina Yousaf", sellerInit: "HY", sellerColor: "#10b981",
+    label: null, badge: null,
+    category: "courses", catLabel: "Excel & Data Entry Course",
+    rating: 4.6, reviews: 22, pricePkr: 1800, delivery: "12 days", revisions: "Unlimited",
+    waNumber: "923006667788",
+    tags: ["Excel", "Data Entry"],
+    searchKeys: "excel data entry course office job training class",
+    desc: "Learn Microsoft Excel formulas, formatting, and data entry skills required for office jobs. Practical assignments included to build real-world speed and accuracy.",
+  },
 ];
 
 // category style map
 const CAT_STYLE = {
+  courses: { cls: "cat-courses", color: "#3b82f6" },
   seo:     { cls: "cat-seo",     color: "#0ea5e9" },
   design:  { cls: "cat-design",  color: "#8b5cf6" },
   ads:     { cls: "cat-ads",     color: "#f59e0b" },
@@ -744,6 +1150,72 @@ const CAT_STYLE = {
 
 function fmtPkr(n) { return "Rs " + n.toLocaleString("en-PK"); }
 
+// ── SELLER PROFILE FUNCTIONS ──────────────────────────────
+function openSellerProfile(sellerName) {
+  const sellerGigs = gigs.filter(g => g.seller === sellerName);
+  if (!sellerGigs.length) return;
+  
+  const seller = sellerGigs[0];
+  const profile = sellerProfiles[sellerName] || {};
+  
+  const avgRating = (sellerGigs.reduce((sum, g) => sum + g.rating, 0) / sellerGigs.length).toFixed(1);
+  const totalReviews = sellerGigs.reduce((sum, g) => sum + g.reviews, 0);
+  
+  document.getElementById("sellerProfileAvatar").innerHTML = 
+    `<div style="width:100%;height:100%;background:linear-gradient(135deg,${seller.sellerColor},${seller.sellerColor}99);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.6rem">${seller.sellerInit}</div>`;
+  document.getElementById("sellerProfileName").textContent = seller.seller;
+  document.getElementById("sellerProfileLabel").textContent = seller.label || "Seller";
+  document.getElementById("sellerProfileSubtitle").textContent = profile.subtitle || "Professional Freelancer";
+  document.getElementById("sellerProfileRating").textContent = avgRating;
+  document.getElementById("sellerProfileReviews").textContent = totalReviews;
+  document.getElementById("sellerProfileGigs").textContent = sellerGigs.length;
+  document.getElementById("sellerProfileSince").textContent = profile.memberSince || "2023";
+  
+  document.getElementById("sellerBio").textContent = profile.bio || "No bio available yet. Contact the seller to know more about their services.";
+  
+  document.getElementById("sellerLocation").textContent = profile.location || "Pakistan";
+  document.getElementById("sellerResponseTime").textContent = profile.responseTime || "1 Hour";
+  document.getElementById("sellerLanguages").textContent = profile.languages || "Urdu, English";
+  document.getElementById("sellerExperience").textContent = profile.experience || "2+ Years";
+  
+  const skillsHtml = (profile.skills || ["Professional Services"]).map(s => `<span class="seller-skill">${s}</span>`).join("");
+  document.getElementById("sellerSkills").innerHTML = skillsHtml;
+  
+  document.getElementById("sellerContactBtn").href = `https://wa.me/${seller.waNumber}?text=${encodeURIComponent("Hi " + sellerName + ", I saw your profile on SastaKaam.com and I'm interested in your services.")}`;
+  
+  const sellerGigsGrid = document.getElementById("sellerGigsGrid");
+  sellerGigsGrid.innerHTML = sellerGigs.map(g => `
+    <div class="seller-gig-card" onclick="closeSellerProfile(); openPopup(${g.id})">
+      <img class="seller-gig-img" src="${g.img}" alt="${g.title}" loading="lazy" onerror="this.style.background='#e8e8e8'">
+      <div class="seller-gig-info">
+        <div class="seller-gig-title">${g.title}</div>
+        <div class="seller-gig-footer">
+          <div class="seller-gig-price">${fmtPkr(g.pricePkr)}</div>
+          <div class="seller-gig-rating">
+            <span class="stars">★</span>
+            <span>${g.rating}</span>
+            <span class="rating-count">(${g.reviews})</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+  
+  document.getElementById("sellerOverlay").classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function closeSellerProfile() {
+  document.getElementById("sellerOverlay").classList.remove("active");
+  document.body.style.overflow = "";
+}
+
+function closeSellerProfileOutside(event) {
+  if (event.target === document.getElementById("sellerOverlay")) {
+    closeSellerProfile();
+  }
+}
+
 // ── SEARCH ────────────────────────────────────────────────
 const searchInput = document.getElementById("searchInput");
 const suggestionsEl = document.getElementById("suggestions");
@@ -751,9 +1223,9 @@ let activeIdx = -1;
 
 searchInput.addEventListener("input", () => {
   const q = searchInput.value.trim().toLowerCase();
-  if (!q) { hideSuggestions(); renderGrid(gigs); updateResultInfo(gigs.length, ""); return; }
+  if (!q) { hideSuggestions(); applyFilters(); return; }
   showSuggestions(q);
-  doSearch(); // live filter as user types
+  doSearch();
 });
 
 searchInput.addEventListener("keydown", e => {
@@ -771,7 +1243,6 @@ function updateActive(items) { items.forEach((it,i) => it.classList.toggle("acti
 function showSuggestions(q) {
   activeIdx = -1;
   const allWords = new Set();
-  // Tags as primary suggestions
   gigs.forEach(g => {
     g.tags.forEach(t => { if (t.toLowerCase().startsWith(q) || t.toLowerCase().includes(q)) allWords.add(t); });
     (g.title + " " + g.searchKeys).split(/\s+/).forEach(w => {
@@ -790,28 +1261,90 @@ function hideSuggestions() { suggestionsEl.classList.remove("show"); }
 function pickSuggestion(val) { searchInput.value = val; hideSuggestions(); doSearch(); }
 
 function doSearch() {
-  const q = searchInput.value.trim().toLowerCase();
   hideSuggestions();
-  if (!q) { renderGrid(gigs); updateResultInfo(gigs.length, ""); return; }
-  const filtered = gigs.filter(g =>
-    g.title.toLowerCase().includes(q) ||
-    g.tags.some(t => t.toLowerCase().includes(q)) ||
-    g.seller.toLowerCase().includes(q) ||
-    g.catLabel.toLowerCase().includes(q) ||
-    g.searchKeys.toLowerCase().includes(q) ||
-    g.desc.toLowerCase().includes(q)
-  );
-  renderGrid(filtered);
-  updateResultInfo(filtered.length, q);
+  applyFilters();
 }
 
-function updateResultInfo(count, q) {
-  const el = document.getElementById("resultInfo");
-  if (!q) { el.textContent = `Showing all ${count} services`; return; }
-  el.innerHTML = count
-    ? `<strong>${count}</strong> service${count!==1?"s":""} found for "<strong>${q}</strong>"`
-    : "";
+// ── CATEGORY FILTER ──────────────────────────────────────
+const CAT_NAMES = {
+  cv: "CV / Resume", courses: "Courses", design: "Graphic Design", seo: "SEO",
+  gmb: "GMB / Local SEO", ads: "Google Ads", adsense: "AdSense",
+  office: "Office & Docs", video: "Video Editing", combo: "Combo Offer",
+};
+
+let currentCategory = "all";
+
+function deriveFilterCat(g) {
+  const t = ((g.catLabel || "") + " " + (g.tags || []).join(" ")).toLowerCase();
+  if (t.includes("combo")) return "combo";
+  if (t.includes("course") || t.includes("training") || t.includes("class")) return "courses";
+  if (t.includes("cv") || t.includes("resume")) return "cv";
+  if (t.includes("adsense")) return "adsense";
+  if (t.includes("gmb") || t.includes("local seo") || t.includes("trustpilot") || t.includes("google business") || t.includes("google maps")) return "gmb";
+  if (t.includes("google ads") || t.includes("ppc") || t.includes("merchant") || t.includes("shopping")) return "ads";
+  if (t.includes("seo") || t.includes("knowledge panel")) return "seo";
+  if (t.includes("excel") || t.includes("thesis") || t.includes("slides") || t.includes("assignment") || t.includes("ppt")) return "office";
+  if (t.includes("video")) return "video";
+  if (t.includes("design") || t.includes("logo") || t.includes("banner") || t.includes("card") || t.includes("letterhead") || t.includes("certificate") || t.includes("flyer") || t.includes("invoice") || t.includes("bill book") || t.includes("social media") || t.includes("doctor pad") || t.includes("web")) return "design";
+  return "other";
 }
+
+function assignFilterCategories() {
+  gigs.forEach(g => { g.filterCat = deriveFilterCat(g); });
+}
+
+function selectCategory(cat) {
+  currentCategory = cat;
+  document.querySelectorAll(".cat-chip").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.cat === cat);
+  });
+  const activeBtn = document.querySelector(`.cat-chip[data-cat="${cat}"]`);
+  if (activeBtn) activeBtn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = searchInput.value.trim().toLowerCase();
+  let filtered = gigs;
+  if (currentCategory !== "all") {
+    filtered = filtered.filter(g => g.filterCat === currentCategory);
+  }
+  if (q) {
+    filtered = filtered.filter(g =>
+      g.title.toLowerCase().includes(q) ||
+      g.tags.some(t => t.toLowerCase().includes(q)) ||
+      g.seller.toLowerCase().includes(q) ||
+      g.catLabel.toLowerCase().includes(q) ||
+      g.searchKeys.toLowerCase().includes(q) ||
+      g.desc.toLowerCase().includes(q)
+    );
+  }
+  renderGrid(filtered);
+  updateResultInfo(filtered.length, q, currentCategory);
+}
+
+function updateResultInfo(count, q, cat) {
+  const el = document.getElementById("resultInfo");
+  const catTxt = cat && cat !== "all" ? CAT_NAMES[cat] || "" : "";
+  if (!q && !catTxt) { el.textContent = `Showing all ${count} services`; return; }
+  const parts = [];
+  if (catTxt) parts.push(`in <strong>${catTxt}</strong>`);
+  if (q) parts.push(`for "<strong>${q}</strong>"`);
+  el.innerHTML = count
+    ? `<strong>${count}</strong> service${count !== 1 ? "s" : ""} found ${parts.join(" ")}`
+    : `No services found ${parts.join(" ")}`;
+}
+
+// ── STICKY OFFSETS ──
+function updateStickyOffsets() {
+  const header = document.querySelector("header");
+  const searchWrap = document.querySelector(".search-wrap");
+  if (!header || !searchWrap) return;
+  const headerH = header.offsetHeight;
+  searchWrap.style.top = headerH + "px";
+}
+window.addEventListener("load", updateStickyOffsets);
+window.addEventListener("resize", updateStickyOffsets);
 
 // ── RENDER ────────────────────────────────────────────────
 function renderGrid(list) {
@@ -831,7 +1364,7 @@ function renderGrid(list) {
       <div class="card-body">
         <div class="seller-row">
           <div class="avatar" style="background:linear-gradient(135deg,${g.sellerColor},${g.sellerColor}99)">${g.sellerInit}</div>
-          <span class="seller-name">${g.seller}</span>
+          <span class="seller-name" onclick="event.stopPropagation(); openSellerProfile('${g.seller}')">${g.seller}</span>
           ${g.label ? `<span class="seller-label">${g.label}</span>` : ""}
         </div>
         <div class="card-tags">${tagsHtml}</div>
@@ -854,57 +1387,75 @@ function openPopup(id) {
   const g = gigs.find(x => x.id === id);
   if (!g) return;
   const cs = CAT_STYLE[g.category] || CAT_STYLE.seo;
-  const pkr = g.pricePkr;
+  const pkr = fmtPkr(g.pricePkr);
 
   document.getElementById("popupImg").src = g.img;
   document.getElementById("popupImg").alt = g.title;
   document.getElementById("popupAvatar").innerHTML =
     `<div style="width:100%;height:100%;background:linear-gradient(135deg,${g.sellerColor},${g.sellerColor}99);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.88rem">${g.sellerInit}</div>`;
   document.getElementById("popupSellerName").textContent = g.seller;
+  document.getElementById("popupSellerName").onclick = function() {
+    closePopup();
+    openSellerProfile(g.seller);
+  };
   document.getElementById("popupSellerSub").textContent = g.label || "Seller";
   document.getElementById("popupTitle").textContent = g.title;
   document.getElementById("popupRating").innerHTML =
-    `<span class="stars">${"★".repeat(Math.floor(g.rating))}</span><span class="num">${g.rating}</span><span class="cnt">(${g.reviews} reviews)</span>`;
+    `<span class="stars">${"★".repeat(Math.floor(g.rating))}</span>
+     <span class="num">${g.rating}</span>
+     <span class="cnt">(${g.reviews} reviews)</span>`;
   document.getElementById("popupTags").innerHTML = g.tags.map(t => `<span class="tag">${t}</span>`).join("");
   document.getElementById("popupDesc").textContent = g.desc;
   document.getElementById("popupMeta").innerHTML = `
     <div class="meta-item"><div class="meta-val">${g.delivery}</div><div class="meta-label">Delivery</div></div>
     <div class="meta-item"><div class="meta-val">${g.revisions}</div><div class="meta-label">Revisions</div></div>
-    <div class="meta-item"><div class="meta-val">${g.reviews}</div><div class="meta-label">Orders Done</div></div>`;
-  document.getElementById("popupPrice").textContent = fmtPkr(pkr);
-
-  const waNumber = g.waNumber || WHATSAPP_NUMBER;
-  const msg = encodeURIComponent(`Assalam o Alaikum! Mujhe aapki yeh service chahiye: "${g.title}" — ${fmtPkr(pkr)}. Mehrbani karke details batayein.`);
-  document.getElementById("popupWA").href = `https://wa.me/${waNumber}?text=${msg}`;
+  `;
+  document.getElementById("popupPrice").textContent = pkr;
+  
+  // ✅ UPDATED: WhatsApp message with Title + Price
+  document.getElementById("popupWA").href = `https://wa.me/${g.waNumber}?text=${encodeURIComponent("Assalam o Alaikum! Muje aapki yeh service chahiye: '" + g.title + "' – " + pkr + " Mehrbani karke details batayen.")}`;
+  
+  document.getElementById("popupCatRow").innerHTML =
+    `<span class="popup-cat-chip" style="background:${cs.color}">${g.catLabel}</span>`;
 
   document.getElementById("overlay").classList.add("active");
   document.body.style.overflow = "hidden";
 }
 
-function closePopup() { document.getElementById("overlay").classList.remove("active"); document.body.style.overflow = ""; }
-function closePopupOutside(e) { if (e.target === document.getElementById("overlay")) closePopup(); }
-
-// ── CALCULATOR ────────────────────────────────────────────
-document.getElementById("rateDisplay").textContent = USD_TO_PKR.toLocaleString();
-
-function openCalc() { document.getElementById("calcOverlay").classList.add("active"); document.body.style.overflow = "hidden"; }
-function closeCalc() { document.getElementById("calcOverlay").classList.remove("active"); document.body.style.overflow = ""; }
-function closeCalcOutside(e) { if (e.target === document.getElementById("calcOverlay")) closeCalc(); }
-
-function calcUsdToPkr() {
-  const v = parseFloat(document.getElementById("usdInput").value);
-  document.getElementById("usdResult").textContent = isNaN(v) || v < 0 ? "—" : fmtPkr(Math.round(v * USD_TO_PKR));
-}
-function calcPkrToUsd() {
-  const v = parseFloat(document.getElementById("pkrInput").value);
-  document.getElementById("pkrResult").textContent = isNaN(v) || v < 0 ? "—" : "$ " + (v / USD_TO_PKR).toFixed(2) + " USD";
+function closePopup() {
+  document.getElementById("overlay").classList.remove("active");
+  document.body.style.overflow = "";
 }
 
-document.addEventListener("keydown", e => { if (e.key === "Escape") { closePopup(); closeCalc(); } });
-document.addEventListener("click", e => { if (!e.target.closest(".search-container")) hideSuggestions(); });
+function closePopupOutside(event) {
+  if (event.target === document.getElementById("overlay")) {
+    closePopup();
+  }
+}
 
-renderGrid(gigs);
-updateResultInfo(gigs.length, "");
+// ── ALL CATEGORIES MENU (hamburger) ────────────────────────
+function toggleMenu() {
+  document.getElementById("menuOverlay").classList.toggle("show");
+}
+function closeMenu() {
+  document.getElementById("menuOverlay").classList.remove("show");
+}
+function closeMenuOutside(event) {
+  if (event.target === document.getElementById("menuOverlay")) closeMenu();
+}
+
+// ── LOGO / HOME LINK ────────────────────────────────────────
+function goHome() {
+  closeMenu();
+  searchInput.value = "";
+  currentCategory = "all";
+  applyFilters();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ── INIT ──────────────────────────────────────────────────
+assignFilterCategories();
+applyFilters();
 </script>
 </body>
 </html>
